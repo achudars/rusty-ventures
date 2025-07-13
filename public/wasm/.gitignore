@@ -1,12 +1,1 @@
-# Allow the generated WASM files to be committed for deployment
-# This ensures Netlify can build without needing Rust installed
-
-# Ignore temporary build files but keep the final outputs
-target/
-.DS_Store
-
-# Keep these files for deployment:
-# *.wasm
-# *.js
-# *.d.ts
-# package.json
+*
