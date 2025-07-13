@@ -2,7 +2,7 @@
 // Click the play button to execute this code
 
 fn main() {
-    println!("Hello from Rust Chronicles!");
+    println!("Hello from Rust Ventures!");
     println!("Rust is running in WebAssembly!");
     
     println!("\nLet's calculate some squares:");

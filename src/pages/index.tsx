@@ -48,7 +48,7 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Rust Chronicles - Rust + WebAssembly + Next.js</title>
+        <title>Rust Ventures - Rust + WebAssembly + Next.js</title>
         <meta name="description" content="A Next.js app with Rust and WebAssembly integration" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -89,7 +89,7 @@ export default function Home() {
           <header className="app-header p-4">
             <div className="flex items-center">
               <div>
-                <h1 className="font-bold text-xl">Rust Chronicles</h1>
+                <h1 className="font-bold text-xl">Rust Ventures</h1>
               </div>
             </div>
           </header>
