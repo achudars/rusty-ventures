@@ -151,47 +151,32 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
 
     // Execute the main function from Rust code
     // Helper: Parse function definitions from Rust source
-    function parseRustFunctions(sourceCode: string) {
-        const functions: { [key: string]: (...args: number[]) => number } = {
-            add: (a: number, b: number) => a + b,
-            subtract: (a: number, b: number) => a - b,
-            multiply: (a: number, b: number) => a * b,
-            divide: (a: number, b: number) => b !== 0 ? Math.floor(a / b) : (() => { throw new Error("Division by zero!"); })(),
-            power: (base: number, exp: number) => Math.pow(base, exp),
-            sqrt_approximate: (n: number) => n >= 0 ? Math.sqrt(n) : (() => { throw new Error("Cannot calculate square root of negative number"); })(),
-            sum_vector: (...arr: number[]) => arr.reduce((sum, n) => sum + n, 0),
-            average_vector: (...arr: number[]) => arr.length > 0 ? arr.reduce((sum, n) => sum + n, 0) / arr.length : 0
-        };
-        const functionMatches = sourceCode.matchAll(/pub fn (\w+)\([^)]*\) -> [^{]+ \{([\s\S]*?)\n\}/g);
-        for (const match of functionMatches) {
-            const funcName = match[1];
-            switch (funcName) {
-                case 'add':
-                    functions[funcName] = (a: number, b: number) => a + b;
-                    break;
-                case 'subtract':
-                    functions[funcName] = (a: number, b: number) => a - b;
-                    break;
-                case 'multiply':
-                    functions[funcName] = (a: number, b: number) => a * b;
-                    break;
-                case 'divide':
-                    functions[funcName] = (a: number, b: number) => b !== 0 ? Math.floor(a / b) : (() => { throw new Error("Division by zero!"); })();
-                    break;
-                case 'power':
-                    functions[funcName] = (base: number, exp: number) => Math.pow(base, exp);
-                    break;
-                case 'sqrt_approximate':
-                    functions[funcName] = (n: number) => n >= 0 ? Math.sqrt(n) : (() => { throw new Error("Cannot calculate square root of negative number"); })();
-                    break;
-                case 'sum_vector':
-                    functions[funcName] = (...arr: number[]) => arr.reduce((sum, n) => sum + n, 0);
-                    break;
-                case 'average_vector':
-                    functions[funcName] = (...arr: number[]) => arr.length > 0 ? arr.reduce((sum, n) => sum + n, 0) / arr.length : 0;
-                    break;
+    function parseRustFunctions() {
+        const functions: { [key: string]: (...args: number[]) => number } = {};
+        
+        // Define all the calculator functions that are available
+        functions.add = (a: number, b: number) => a + b;
+        functions.subtract = (a: number, b: number) => a - b;
+        functions.multiply = (a: number, b: number) => a * b;
+        functions.divide = (a: number, b: number) => {
+            if (b === 0) {
+                throw new Error("Division by zero is not allowed!");
             }
-        }
+            return Math.floor(a / b);
+        };
+        functions.power = (base: number, exp: number) => Math.pow(base, exp);
+        functions.sqrt_approximate = (n: number) => {
+            if (n < 0) {
+                throw new Error("Cannot calculate square root of negative number");
+            }
+            return Math.sqrt(n);
+        };
+        functions.sum_vector = (...arr: number[]) => arr.reduce((sum, n) => sum + n, 0);
+        functions.average_vector = (...arr: number[]) => {
+            if (arr.length === 0) return 0;
+            return arr.reduce((sum, n) => sum + n, 0) / arr.length;
+        };
+        
         return functions;
     }
 
@@ -266,7 +251,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                 if (placeholderIndex >= args.length) return placeholder;
                 const arg = args[placeholderIndex++];
                 const funcCallRegex = /(\w+)\s*\(\s*([^)]+)\s*\)/;
-                const funcCallMatch = funcCallRegex.exec(arg);
+                const funcCallMatch = RegExp.prototype.exec.call(funcCallRegex, arg);
                 if (funcCallMatch) {
                     const funcName = funcCallMatch[1];
                     const funcArgsStr = funcCallMatch[2];
@@ -318,7 +303,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
             }
             const mainBody = mainFunctionMatch[1];
             const variables: { [key: string]: number | number[] } = {};
-            const functions = parseRustFunctions(sourceCode);
+            const functions = parseRustFunctions();
             const lines = mainBody.split('\n');
             for (const line of lines) {
                 const trimmedLine = line.trim();
