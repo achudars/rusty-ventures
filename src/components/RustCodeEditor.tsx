@@ -150,187 +150,187 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
     }, []);
 
     // Execute the main function from Rust code
+    // Helper: Parse function definitions from Rust source
+    function parseRustFunctions(sourceCode: string) {
+        const functions: { [key: string]: (...args: number[]) => number } = {
+            add: (a: number, b: number) => a + b,
+            subtract: (a: number, b: number) => a - b,
+            multiply: (a: number, b: number) => a * b,
+            divide: (a: number, b: number) => b !== 0 ? Math.floor(a / b) : (() => { throw new Error("Division by zero!"); })(),
+            power: (base: number, exp: number) => Math.pow(base, exp),
+            sqrt_approximate: (n: number) => n >= 0 ? Math.sqrt(n) : (() => { throw new Error("Cannot calculate square root of negative number"); })(),
+            sum_vector: (...arr: number[]) => arr.reduce((sum, n) => sum + n, 0),
+            average_vector: (...arr: number[]) => arr.length > 0 ? arr.reduce((sum, n) => sum + n, 0) / arr.length : 0
+        };
+        const functionMatches = sourceCode.matchAll(/pub fn (\w+)\([^)]*\) -> [^{]+ \{([\s\S]*?)\n\}/g);
+        for (const match of functionMatches) {
+            const funcName = match[1];
+            switch (funcName) {
+                case 'add':
+                    functions[funcName] = (a: number, b: number) => a + b;
+                    break;
+                case 'subtract':
+                    functions[funcName] = (a: number, b: number) => a - b;
+                    break;
+                case 'multiply':
+                    functions[funcName] = (a: number, b: number) => a * b;
+                    break;
+                case 'divide':
+                    functions[funcName] = (a: number, b: number) => b !== 0 ? Math.floor(a / b) : (() => { throw new Error("Division by zero!"); })();
+                    break;
+                case 'power':
+                    functions[funcName] = (base: number, exp: number) => Math.pow(base, exp);
+                    break;
+                case 'sqrt_approximate':
+                    functions[funcName] = (n: number) => n >= 0 ? Math.sqrt(n) : (() => { throw new Error("Cannot calculate square root of negative number"); })();
+                    break;
+                case 'sum_vector':
+                    functions[funcName] = (...arr: number[]) => arr.reduce((sum, n) => sum + n, 0);
+                    break;
+                case 'average_vector':
+                    functions[funcName] = (...arr: number[]) => arr.length > 0 ? arr.reduce((sum, n) => sum + n, 0) / arr.length : 0;
+                    break;
+            }
+        }
+        return functions;
+    }
+
+    // Helper: Parse let statements and update variables
+    function parseLetStatement(trimmedLine: string, variables: { [key: string]: number | number[] }) {
+        const letRegex = /let\s+(\w+)\s*=\s*([^;]+);/;
+        const letMatch = letRegex.exec(trimmedLine);
+        if (letMatch) {
+            const varName = letMatch[1];
+            const value = letMatch[2].trim();
+            if (/^\d+$/.test(value)) {
+                variables[varName] = parseInt(value);
+            } else if (/^vec!\[([^\]]+)\]/.test(value)) {
+                const vecContent = /vec!\[([^\]]+)\]/.exec(value)?.[1];
+                if (vecContent) {
+                    variables[varName] = vecContent.split(',').map(s => parseInt(s.trim()));
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // Helper: Parse println! statement and return output string (or null)
+    function parsePrintlnStatement(
+        trimmedLine: string,
+        variables: { [key: string]: number | number[] },
+        functions: { [key: string]: (...args: number[]) => number }
+    ): string | null {
+        const printlnRegex = /println!\s*\(\s*"([^"]+)"\s*(?:,\s*([^)]+))?\s*\);/;
+        const printlnMatch = printlnRegex.exec(trimmedLine);
+        if (!printlnMatch) return null;
+        let text = printlnMatch[1];
+        const argsString = printlnMatch[2];
+        text = text.replace(/\\n/g, '\n');
+        if (argsString) {
+            function parseArgs(argsString: string): string[] {
+                const args: string[] = [];
+                let currentArg = '';
+                let depth = 0;
+                let inQuotes = false;
+                for (const char of argsString) {
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                        currentArg += char;
+                    } else if (char === '(' && !inQuotes) {
+                        depth++;
+                        currentArg += char;
+                    } else if (char === ')' && !inQuotes) {
+                        depth--;
+                        currentArg += char;
+                    } else if (char === ',' && depth === 0 && !inQuotes) {
+                        args.push(currentArg.trim());
+                        currentArg = '';
+                    } else {
+                        currentArg += char;
+                    }
+                }
+                if (currentArg.trim()) {
+                    args.push(currentArg.trim());
+                }
+                return args;
+            }
+            const args: string[] = argsString ? parseArgs(argsString) : [];
+            let placeholderIndex = 0;
+            function resolvePlaceholder(
+                placeholder: string,
+                args: string[],
+                variables: { [key: string]: number | number[] },
+                functions: { [key: string]: (...args: number[]) => number }
+            ): string {
+                if (placeholderIndex >= args.length) return placeholder;
+                const arg = args[placeholderIndex++];
+                const funcCallRegex = /(\w+)\s*\(\s*([^)]+)\s*\)/;
+                const funcCallMatch = funcCallRegex.exec(arg);
+                if (funcCallMatch) {
+                    const funcName = funcCallMatch[1];
+                    const funcArgsStr = funcCallMatch[2];
+                    const funcArgs = funcArgsStr.split(',').map(a => {
+                        const trimmed = a.trim();
+                        if (trimmed.startsWith('&')) {
+                            const varName = trimmed.substring(1);
+                            const value = variables[varName];
+                            return Array.isArray(value) ? value : [value];
+                        }
+                        return variables[trimmed] !== undefined ?
+                            [variables[trimmed] as number] :
+                            [parseFloat(trimmed) || 0];
+                    }).flat();
+                    if (functions[funcName]) {
+                        const result = functions[funcName](...funcArgs);
+                        if (placeholder.includes('.2')) {
+                            return result.toFixed(2);
+                        }
+                        return result.toString();
+                    }
+                }
+                if (variables[arg] !== undefined) {
+                    const value = variables[arg];
+                    if (placeholder.includes('?') && Array.isArray(value)) {
+                        return `[${value.join(', ')}]`;
+                    }
+                    return value.toString();
+                }
+                return arg;
+            }
+            text = text.replace(/\{[^}]*\}/g, (placeholder) =>
+                resolvePlaceholder(placeholder, args, variables, functions)
+            );
+        }
+        return text;
+    }
+
     const executeRustMain = useCallback((sourceCode: string, fileName: string): string => {
         if (fileName === "hello.rs" && rustModule) {
-            // Use actual WebAssembly for hello.rs
             return rustModule.run_hello_world();
         }
-
         try {
             const output: string[] = [];
-
-            // Parse and execute the main function
             const mainFunctionRegex = /fn main\(\)\s*\{([\s\S]*?)\n\}/;
             const mainFunctionMatch = mainFunctionRegex.exec(sourceCode);
             if (!mainFunctionMatch) {
                 return `Error: No main function found in ${fileName}`;
             }
-
-            const mainBody = mainFunctionMatch[1];            // Create a simple execution context
+            const mainBody = mainFunctionMatch[1];
             const variables: { [key: string]: number | number[] } = {};
-            const functions: { [key: string]: (...args: number[]) => number } = {
-                add: (a: number, b: number) => a + b,
-                subtract: (a: number, b: number) => a - b,
-                multiply: (a: number, b: number) => a * b,
-                divide: (a: number, b: number) => b !== 0 ? Math.floor(a / b) : (() => { throw new Error("Division by zero!"); })(),
-                power: (base: number, exp: number) => Math.pow(base, exp),
-                sqrt_approximate: (n: number) => n >= 0 ? Math.sqrt(n) : (() => { throw new Error("Cannot calculate square root of negative number"); })(),
-                sum_vector: (...arr: number[]) => arr.reduce((sum, n) => sum + n, 0),
-                average_vector: (...arr: number[]) => arr.length > 0 ? arr.reduce((sum, n) => sum + n, 0) / arr.length : 0
-            };
-
-            // Parse and register functions first
-            const functionMatches = sourceCode.matchAll(/pub fn (\w+)\([^)]*\) -> [^{]+ \{([\s\S]*?)\n\}/g);
-            for (const match of functionMatches) {
-                const funcName = match[1];
-
-                // Create JavaScript implementations of common Rust functions
-                switch (funcName) {
-                    case 'add':
-                        functions[funcName] = (a: number, b: number) => a + b;
-                        break;
-                    case 'subtract':
-                        functions[funcName] = (a: number, b: number) => a - b;
-                        break;
-                    case 'multiply':
-                        functions[funcName] = (a: number, b: number) => a * b;
-                        break;
-                    case 'divide':
-                        functions[funcName] = (a: number, b: number) => b !== 0 ? Math.floor(a / b) : (() => { throw new Error("Division by zero!"); })();
-                        break;
-                    case 'power':
-                        functions[funcName] = (base: number, exp: number) => Math.pow(base, exp);
-                        break;
-                    case 'sqrt_approximate':
-                        functions[funcName] = (n: number) => n >= 0 ? Math.sqrt(n) : (() => { throw new Error("Cannot calculate square root of negative number"); })();
-                        break;
-                    case 'sum_vector':
-                        functions[funcName] = (...arr: number[]) => arr.reduce((sum, n) => sum + n, 0);
-                        break;
-                    case 'average_vector':
-                        functions[funcName] = (...arr: number[]) => arr.length > 0 ? arr.reduce((sum, n) => sum + n, 0) / arr.length : 0;
-                        break;
-                }
-            }
-
-            // Parse variable declarations and statements
+            const functions = parseRustFunctions(sourceCode);
             const lines = mainBody.split('\n');
             for (const line of lines) {
                 const trimmedLine = line.trim();
-
-                // Handle let statements
-                const letRegex = /let\s+(\w+)\s*=\s*([^;]+);/;
-                const letMatch = letRegex.exec(trimmedLine);
-                if (letMatch) {
-                    const varName = letMatch[1];
-                    const value = letMatch[2].trim();
-
-                    if (/^\d+$/.test(value)) {
-                        variables[varName] = parseInt(value);
-                    } else if (/^vec!\[([^\]]+)\]/.test(value)) {
-                        const vecContent = /vec!\[([^\]]+)\]/.exec(value)?.[1];
-                        if (vecContent) {
-                            variables[varName] = vecContent.split(',').map(s => parseInt(s.trim()));
-                        }
-                    }
+                if (parseLetStatement(trimmedLine, variables)) {
                     continue;
                 }
-
-                // Handle println! statements - improved parsing
-                const printlnRegex = /println!\s*\(\s*"([^"]+)"\s*(?:,\s*([^)]+))?\s*\);/;
-                const printlnMatch = printlnRegex.exec(trimmedLine);
-                if (printlnMatch) {
-                    let text = printlnMatch[1];
-                    const argsString = printlnMatch[2];
-
-                    // Handle escape sequences
-                    text = text.replace(/\\n/g, '\n');
-
-                    if (argsString) {
-                        // Parse arguments more carefully
-                        const args: string[] = [];
-                        let currentArg = '';
-                        let depth = 0;
-                        let inQuotes = false;
-
-                        for (const char of argsString) {
-                            if (char === '"') {
-                                inQuotes = !inQuotes;
-                                currentArg += char;
-                            } else if (char === '(' && !inQuotes) {
-                                depth++;
-                                currentArg += char;
-                            } else if (char === ')' && !inQuotes) {
-                                depth--;
-                                currentArg += char;
-                            } else if (char === ',' && depth === 0 && !inQuotes) {
-                                args.push(currentArg.trim());
-                                currentArg = '';
-                            } else {
-                                currentArg += char;
-                            }
-                        }
-                        if (currentArg.trim()) {
-                            args.push(currentArg.trim());
-                        }
-
-                        // Replace {} placeholders with actual values
-                        let placeholderIndex = 0;
-                        text = text.replace(/\{[^}]*\}/g, (placeholder) => {
-                            if (placeholderIndex < args.length) {
-                                const arg = args[placeholderIndex++];
-
-                                // Handle function calls like add(a, b)
-                                const funcCallRegex = /(\w+)\s*\(\s*([^)]+)\s*\)/;
-                                const funcCallMatch = funcCallRegex.exec(arg);
-                                if (funcCallMatch) {
-                                    const funcName = funcCallMatch[1];
-                                    const funcArgsStr = funcCallMatch[2];
-                                    const funcArgs = funcArgsStr.split(',').map(a => {
-                                        const trimmed = a.trim();
-                                        if (trimmed.startsWith('&')) {
-                                            // Handle references like &numbers
-                                            const varName = trimmed.substring(1);
-                                            const value = variables[varName];
-                                            return Array.isArray(value) ? value : [value];
-                                        }
-                                        return variables[trimmed] !== undefined ?
-                                            [variables[trimmed] as number] :
-                                            [parseFloat(trimmed) || 0];
-                                    }).flat();
-
-                                    if (functions[funcName]) {
-                                        const result = functions[funcName](...funcArgs);
-                                        // Handle formatting specifiers
-                                        if (placeholder.includes('.2')) {
-                                            return result.toFixed(2);
-                                        }
-                                        return result.toString();
-                                    }
-                                }
-
-                                // Handle direct variable references
-                                if (variables[arg] !== undefined) {
-                                    const value = variables[arg];
-                                    // Handle {:?} debug format for arrays
-                                    if (placeholder.includes('?') && Array.isArray(value)) {
-                                        return `[${value.join(', ')}]`;
-                                    }
-                                    return value.toString();
-                                }
-
-                                return arg;
-                            }
-                            return placeholder;
-                        });
-                    }
-
-                    output.push(text);
+                const printlnOutput = parsePrintlnStatement(trimmedLine, variables, functions);
+                if (printlnOutput !== null) {
+                    output.push(printlnOutput);
                 }
             }
-
             return output.length > 0 ? output.join('\n') : `Executed ${fileName} - no output produced`;
-
         } catch (error) {
             return `Runtime Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
         }
