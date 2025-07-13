@@ -1,0 +1,8 @@
+{
+  "name": "build-wasm",
+  "version": "1.0.0",
+  "description": "Build script for Rust WebAssembly",
+  "scripts": {
+    "build": "wasm-pack build --target web --out-dir ../public/wasm rust"
+  }
+}

@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  /* Pride flag colors from the image */
+  --color-purple: #a12a72;
+  --color-red: #ee3356;
+  --color-orange: #f77e55;
+  --color-yellow: #f9d35e;
+  --color-teal: #2a9d8f;
+
+  /* Theme colors */
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary-color: var(--color-purple);
+  --accent-color: var(--color-red);
+  --success-color: var(--color-teal);
+  --warning-color: var(--color-yellow);
+  --info-color: var(--color-orange);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
