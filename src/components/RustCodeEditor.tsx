@@ -187,14 +187,23 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
         if (letMatch) {
             const varName = letMatch[1];
             const value = letMatch[2].trim();
+            
+            // Handle simple numbers
             if (/^\d+$/.test(value)) {
                 variables[varName] = parseInt(value);
-            } else if (/^vec!\[([^\]]+)\]/.test(value)) {
+            } 
+            // Handle vec![...] syntax
+            else if (/^vec!\[([^\]]+)\]/.test(value)) {
                 const vecContent = /vec!\[([^\]]+)\]/.exec(value)?.[1];
                 if (vecContent) {
                     variables[varName] = vecContent.split(',').map(s => parseInt(s.trim()));
                 }
             }
+            // Handle floating point numbers
+            else if (/^\d*\.\d+$/.test(value)) {
+                variables[varName] = parseFloat(value);
+            }
+            
             return true;
         }
         return false;
@@ -262,9 +271,13 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                             const value = variables[varName];
                             return Array.isArray(value) ? value : [value];
                         }
-                        return variables[trimmed] !== undefined ?
-                            [variables[trimmed] as number] :
-                            [parseFloat(trimmed) || 0];
+                        // Check if it's a variable
+                        if (variables[trimmed] !== undefined) {
+                            return [variables[trimmed] as number];
+                        }
+                        // Parse as number (handles both int and float)
+                        const numValue = parseFloat(trimmed) || 0;
+                        return [numValue];
                     }).flat();
                     if (functions[funcName]) {
                         const result = functions[funcName](...funcArgs);
@@ -296,7 +309,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
         }
         try {
             const output: string[] = [];
-            const mainFunctionRegex = /fn main\(\)\s*\{([\s\S]*?)\n\}/;
+            const mainFunctionRegex = /fn main\(\)\s*\{([\s\S]*?)\}/;
             const mainFunctionMatch = mainFunctionRegex.exec(sourceCode);
             if (!mainFunctionMatch) {
                 return `Error: No main function found in ${fileName}`;
@@ -305,13 +318,21 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
             const variables: { [key: string]: number | number[] } = {};
             const functions = parseRustFunctions();
             const lines = mainBody.split('\n');
+            
+            console.log('Debug - Main function body:', mainBody);
+            console.log('Debug - Lines to process:', lines);
+            
             for (const line of lines) {
                 const trimmedLine = line.trim();
+                console.log('Debug - Processing line:', trimmedLine);
+                
                 if (parseLetStatement(trimmedLine, variables)) {
+                    console.log('Debug - Parsed let statement, variables:', variables);
                     continue;
                 }
                 const printlnOutput = parsePrintlnStatement(trimmedLine, variables, functions);
                 if (printlnOutput !== null) {
+                    console.log('Debug - Println output:', printlnOutput);
                     output.push(printlnOutput);
                 }
             }
