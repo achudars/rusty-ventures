@@ -28,55 +28,62 @@ const RustPlayground: React.FC<RustPlaygroundProps> = ({ defaultCode = '' }) => 
     const [rustModule, setRustModule] = useState<RustModule | null>(null);
     const [wasmLoadStatus, setWasmLoadStatus] = useState<string>('loading');
 
-    // Helper function to load a script
-    const loadScript = (src: string): Promise<void> => {
+    // Helper function to load a script as a module
+    const loadScriptAsModule = (src: string): Promise<void> => {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = src;
-            script.onload = () => resolve();
+            script.type = 'module';
+            script.textContent = `
+                import * as wasmModule from '${src}';
+                window.wasmModule = wasmModule;
+                window.dispatchEvent(new CustomEvent('wasmModuleLoaded'));
+            `;
             script.onerror = () => reject(new Error(`Failed to load ${src}`));
             document.head.appendChild(script);
+
+            window.addEventListener('wasmModuleLoaded', () => {
+                resolve();
+            }, { once: true });
         });
     };
-    
+
     // Load the WebAssembly module
     useEffect(() => {
         // This prevents any attempt to use WebAssembly during SSR
         if (typeof window === 'undefined') return;
-        
+
         const loadWasm = async () => {
             try {
                 setWasmLoadStatus('loading');
-                
-                // Load both scripts
-                try {
-                    // First load the Wasm JS wrapper
-                    await loadScript('/wasm/rust.js');
-                    
-                    // Then load our helper script
-                    await loadScript('/wasm/wasm-loader.js');
-                    
+
+                // Load the WASM module as an ES6 module
+                await loadScriptAsModule('/wasm/rust.js');
+
+                // Access the loaded module from window
+                const wasmModule = window.wasmModule;
+
+                if (wasmModule?.default) {
                     // Initialize the WebAssembly module
-                    if (typeof window.initRustWasm === 'function') {
-                        const result = await window.initRustWasm();
-                        // Type check the result before using it
-                        const wasmApi = result as RustModule;
-                        
-                        if (typeof wasmApi.run_hello_world === 'function' && 
-                            typeof wasmApi.get_sample_code === 'function') {
-                            setRustModule(wasmApi);
-                            setCode(wasmApi.get_sample_code());
-                            setWasmLoadStatus('loaded');
-                            console.log('Successfully loaded Rust module');
-                        } else {
-                            throw new Error('Invalid WebAssembly module structure');
-                        }
+                    await wasmModule.default('/wasm/rust_bg.wasm');
+
+                    // Validate that the module has the required functions
+                    if (typeof wasmModule.run_hello_world === 'function' &&
+                        typeof wasmModule.get_sample_code === 'function') {
+
+                        const rustApi: RustModule = {
+                            run_hello_world: wasmModule.run_hello_world,
+                            get_sample_code: wasmModule.get_sample_code
+                        };
+
+                        setRustModule(rustApi);
+                        setCode(rustApi.get_sample_code());
+                        setWasmLoadStatus('loaded');
+                        console.log('Successfully loaded Rust module');
                     } else {
-                        throw new Error('initRustWasm function not found');
+                        throw new Error('Invalid WebAssembly module structure');
                     }
-                } catch (scriptError) {
-                    console.error('Script loading error:', scriptError);
-                    throw scriptError; // Re-throw to be caught by the outer catch
+                } else {
+                    throw new Error('Failed to load WebAssembly module');
                 }
             } catch (error) {
                 console.error('Failed to load WebAssembly module:', error);

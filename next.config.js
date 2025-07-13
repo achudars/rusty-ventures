@@ -31,7 +31,7 @@ const nextConfig = {
     return config;
   },
   // Configuration for external packages
-  serverExternalPackages: ['wasm'],
+  serverExternalPackages: ["wasm"],
 };
 
 module.exports = nextConfig;
