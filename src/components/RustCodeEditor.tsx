@@ -153,7 +153,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
     // Helper: Parse function definitions from Rust source
     function parseRustFunctions() {
         const functions: { [key: string]: (...args: number[]) => number } = {};
-        
+
         // Define all the calculator functions that are available
         functions.add = (a: number, b: number) => a + b;
         functions.subtract = (a: number, b: number) => a - b;
@@ -176,7 +176,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
             if (arr.length === 0) return 0;
             return arr.reduce((sum, n) => sum + n, 0) / arr.length;
         };
-        
+
         return functions;
     }
 
@@ -187,11 +187,11 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
         if (letMatch) {
             const varName = letMatch[1];
             const value = letMatch[2].trim();
-            
+
             // Handle simple numbers
             if (/^\d+$/.test(value)) {
                 variables[varName] = parseInt(value);
-            } 
+            }
             // Handle vec![...] syntax
             else if (/^vec!\[([^\]]+)\]/.test(value)) {
                 const vecContent = /vec!\[([^\]]+)\]/.exec(value)?.[1];
@@ -203,7 +203,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
             else if (/^\d*\.\d+$/.test(value)) {
                 variables[varName] = parseFloat(value);
             }
-            
+
             return true;
         }
         return false;
@@ -215,12 +215,23 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
         variables: { [key: string]: number | number[] },
         functions: { [key: string]: (...args: number[]) => number }
     ): string | null {
-        const printlnRegex = /println!\s*\(\s*"([^"]+)"\s*(?:,\s*([^)]+))?\s*\);/;
+        // More flexible regex that handles various println! formats
+        const printlnRegex = /println!\s*\(\s*"([^"]+)"\s*(?:,\s*([^)]+))?\s*\)/;
         const printlnMatch = printlnRegex.exec(trimmedLine);
+
+        console.log('Debug - Parsing println:', trimmedLine);
+        console.log('Debug - Regex match:', printlnMatch);
+
         if (!printlnMatch) return null;
+
         let text = printlnMatch[1];
         const argsString = printlnMatch[2];
+
+        console.log('Debug - Extracted text:', text);
+        console.log('Debug - Args string:', argsString);
+
         text = text.replace(/\\n/g, '\n');
+
         if (argsString) {
             function parseArgs(argsString: string): string[] {
                 const args: string[] = [];
@@ -318,21 +329,28 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
             const variables: { [key: string]: number | number[] } = {};
             const functions = parseRustFunctions();
             const lines = mainBody.split('\n');
-            
+
             console.log('Debug - Main function body:', mainBody);
             console.log('Debug - Lines to process:', lines);
-            
+
             for (const line of lines) {
                 const trimmedLine = line.trim();
                 console.log('Debug - Processing line:', trimmedLine);
-                
+
                 if (parseLetStatement(trimmedLine, variables)) {
                     console.log('Debug - Parsed let statement, variables:', variables);
                     continue;
                 }
+
+                // Check if this line contains println!
+                if (trimmedLine.includes('println!')) {
+                    console.log('Debug - Found println line:', trimmedLine);
+                }
+
                 const printlnOutput = parsePrintlnStatement(trimmedLine, variables, functions);
+                console.log('Debug - Println parsing result:', printlnOutput);
                 if (printlnOutput !== null) {
-                    console.log('Debug - Println output:', printlnOutput);
+                    console.log('Debug - Adding to output:', printlnOutput);
                     output.push(printlnOutput);
                 }
             }
