@@ -326,7 +326,6 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                     }
 
                     output.push(text);
-                    continue;
                 }
             }
 
