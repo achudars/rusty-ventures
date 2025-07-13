@@ -292,7 +292,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                                             // Handle references like &numbers
                                             const varName = trimmed.substring(1);
                                             const value = variables[varName];
-                                            return Array.isArray(value) ? value : [value as number];
+                                            return Array.isArray(value) ? value : [value];
                                         }
                                         return variables[trimmed] !== undefined ?
                                             [variables[trimmed] as number] :
