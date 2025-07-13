@@ -235,7 +235,8 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                 }
 
                 // Handle println! statements - improved parsing
-                const printlnMatch = trimmedLine.match(/println!\s*\(\s*"([^"]+)"\s*(?:,\s*([^)]+))?\s*\);/);
+                const printlnRegex = /println!\s*\(\s*"([^"]+)"\s*(?:,\s*([^)]+))?\s*\);/;
+                const printlnMatch = printlnRegex.exec(trimmedLine);
                 if (printlnMatch) {
                     let text = printlnMatch[1];
                     const argsString = printlnMatch[2];
