@@ -2,6 +2,10 @@
 
 A Next.js project that demonstrates integration with Rust via WebAssembly. This project allows you to view and execute Rust code in the browser.
 
+## Preview
+
+![Rusty Ventures Preview](rusty-ventures.png)
+
 ## Features
 
 - Split-screen layout with documentation on the left and code on the right
