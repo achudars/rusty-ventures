@@ -1,27 +1,62 @@
 @import "tailwindcss";
 
 :root {
-  /* Pride flag colors from the image */
+  /* New color palette from the attachment */
+  --color-dark-burgundy: #800020;
+  --color-steel-blue: #4682B4;
+  --color-light-blue: #87CEEB;
+  --color-pale-blue: #B0E0E6;
+  --color-very-light-blue: #F0F8FF;
+
+  /* Pride flag colors for compatibility */
   --color-purple: #a12a72;
   --color-red: #ee3356;
   --color-orange: #f77e55;
   --color-yellow: #f9d35e;
   --color-teal: #2a9d8f;
 
-  /* Theme colors */
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary-color: var(--color-purple);
-  --accent-color: var(--color-red);
-  --success-color: var(--color-teal);
+  /* Main app colors using the new palette */
+  --dark-primary: var(--color-dark-burgundy);
+  --medium-primary: var(--color-steel-blue);
+  --light-primary: var(--color-light-blue);
+  --accent-primary: var(--color-pale-blue);
+  --accent-secondary: var(--color-very-light-blue);
+  --white: #ffffff;
+  --off-white: #f8f9fa;
+  --light-gray: #e9ecef;
+  --medium-gray: #ced4da;
+  --dark-gray: #495057;
+  --code-bg: #2d2d2d;
+  --dark-panel: #1e2a3a;
+  --console-bg: #1a2332;
+
+  /* Theme colors using new palette */
+  --background: var(--dark-primary);
+  --sidebar-bg: var(--color-dark-burgundy);
+  --foreground: var(--white);
+  --header-bg: var(--color-dark-burgundy);
+  --header-text: var(--white);
+  --editor-bg: var(--dark-panel);
+  --editor-text: var(--white);
+  --button-primary: var(--color-steel-blue);
+  --button-hover: var(--color-light-blue);
+  --button-disabled: var(--medium-gray);
+  --border-color: var(--light-primary);
+  
+  /* Primary and accent colors for the app */
+  --primary-color: var(--color-steel-blue);
+  --accent-color: var(--color-light-blue);
+  --success-color: var(--color-pale-blue);
   --warning-color: var(--color-yellow);
-  --info-color: var(--color-orange);
+  --info-color: var(--color-very-light-blue);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--color-dark-burgundy);
+    --foreground: var(--white);
+    --header-bg: var(--color-dark-burgundy);
+    --editor-bg: var(--dark-panel);
   }
 }
 
@@ -40,5 +75,198 @@ body {
 
 html, body {
   height: 100%;
-  overflow: hidden;
+}
+
+/* App layout styles similar to python-chronicles */
+.app-header {
+  background-color: var(--sidebar-bg);
+  color: var(--header-text);
+  border-bottom: 1px solid var(--light-primary);
+}
+
+.app-sidebar {
+  background-color: var(--sidebar-bg);
+  color: var(--white);
+  width: 240px;
+  min-width: 240px;
+}
+
+.sidebar-icon {
+  color: var(--white);
+  opacity: 0.85;
+}
+
+.sidebar-icon.active {
+  color: var(--white);
+  opacity: 1;
+}
+
+.sidebar-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  margin: 0.25rem 0;
+  transition: background-color 0.2s;
+}
+
+.sidebar-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu-item.active {
+  background-color: var(--dark-panel);
+}
+
+/* Rounded menu items */
+.sidebar-menu-item-rounded {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.sidebar-menu-item-rounded:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu-item-rounded.active {
+  background-color: var(--dark-panel);
+  border-radius: 0.5rem;
+}
+
+/* Editor styles */
+.editor-header {
+  background-color: var(--dark-panel);
+  border-bottom: 1px solid var(--light-primary);
+}
+
+.run-button {
+  transition: background-color 0.2s;
+  color: white;
+}
+
+.run-button-active {
+  background-color: var(--color-steel-blue);
+}
+
+.run-button-active:hover {
+  background-color: var(--color-light-blue);
+}
+
+.run-button-disabled {
+  background-color: var(--button-disabled);
+}
+
+.loading-container {
+  background-color: var(--dark-panel);
+  color: var(--medium-gray);
+}
+
+.console-bg {
+  background-color: var(--console-bg);
+}
+
+/* CodeMirror editor styling */
+.cm-editor {
+  background-color: var(--dark-panel) !important;
+}
+
+.cm-editor .cm-focused {
+  background-color: var(--dark-panel) !important;
+}
+
+.cm-editor .cm-scroller {
+  background-color: var(--dark-panel) !important;
+  overflow: visible !important;
+  scrollbar-width: none;
+}
+
+.cm-editor .cm-content {
+  background-color: var(--dark-panel) !important;
+  padding: 1rem !important;
+}
+
+.cm-editor .cm-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.console-output-text {
+  color: var(--color-light-blue);
+}
+
+.right-panel {
+  background-color: var(--console-bg);
+  color: var(--white);
+}
+
+.right-panel .loading-container {
+  color: var(--white);
+}
+
+.right-panel .output-console {
+  color: var(--light-gray);
+}
+
+.output-console {
+  background-color: var(--console-bg);
+  border-color: var(--light-primary);
+}
+
+/* Custom button styles for code editor */
+.button-orange-active {
+  background-color: var(--color-steel-blue);
+}
+
+.button-green-active {
+  background-color: var(--color-pale-blue);
+}
+
+.button-hover-dark {
+  background-color: var(--dark-gray);
+}
+
+/* Custom thin scrollbar for output console */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--medium-gray) var(--console-bg);
+}
+
+/* Webkit scrollbar styling for Chrome/Safari - vertical only */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 0px;
+}
+
+.custom-scrollbar::-webkit-scrollbar:vertical {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar:horizontal {
+  height: 0px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--console-bg);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--medium-gray);
+  border-radius: 4px;
+  border: 1px solid var(--console-bg);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--light-gray);
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: var(--console-bg);
 }
