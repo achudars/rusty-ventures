@@ -253,8 +253,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                         let depth = 0;
                         let inQuotes = false;
 
-                        for (let i = 0; i < argsString.length; i++) {
-                            const char = argsString[i];
+                        for (const char of argsString) {
                             if (char === '"') {
                                 inQuotes = !inQuotes;
                                 currentArg += char;
