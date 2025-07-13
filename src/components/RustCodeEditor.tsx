@@ -160,7 +160,8 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
             const output: string[] = [];
 
             // Parse and execute the main function
-            const mainFunctionMatch = sourceCode.match(/fn main\(\)\s*\{([\s\S]*?)\n\}/);
+            const mainFunctionRegex = /fn main\(\)\s*\{([\s\S]*?)\n\}/;
+            const mainFunctionMatch = mainFunctionRegex.exec(sourceCode);
             if (!mainFunctionMatch) {
                 return `Error: No main function found in ${fileName}`;
             }
@@ -218,7 +219,8 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                 const trimmedLine = line.trim();
 
                 // Handle let statements
-                const letMatch = trimmedLine.match(/let\s+(\w+)\s*=\s*([^;]+);/);
+                const letRegex = /let\s+(\w+)\s*=\s*([^;]+);/;
+                const letMatch = letRegex.exec(trimmedLine);
                 if (letMatch) {
                     const varName = letMatch[1];
                     const value = letMatch[2].trim();
@@ -226,7 +228,7 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                     if (/^\d+$/.test(value)) {
                         variables[varName] = parseInt(value);
                     } else if (/^vec!\[([^\]]+)\]/.test(value)) {
-                        const vecContent = value.match(/vec!\[([^\]]+)\]/)?.[1];
+                        const vecContent = /vec!\[([^\]]+)\]/.exec(value)?.[1];
                         if (vecContent) {
                             variables[varName] = vecContent.split(',').map(s => parseInt(s.trim()));
                         }
@@ -280,7 +282,8 @@ const CodeEditor = ({ currentFile = "hello.rs" }: CodeEditorProps) => {
                                 const arg = args[placeholderIndex++];
 
                                 // Handle function calls like add(a, b)
-                                const funcCallMatch = arg.match(/(\w+)\s*\(\s*([^)]+)\s*\)/);
+                                const funcCallRegex = /(\w+)\s*\(\s*([^)]+)\s*\)/;
+                                const funcCallMatch = funcCallRegex.exec(arg);
                                 if (funcCallMatch) {
                                     const funcName = funcCallMatch[1];
                                     const funcArgsStr = funcCallMatch[2];
