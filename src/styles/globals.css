@@ -91,6 +91,67 @@ html, body {
   min-width: 240px;
 }
 
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .app-sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: auto;
+    min-height: 0;
+  }
+  
+  /* Ensure proper spacing on mobile */
+  body {
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Mobile header adjustments */
+  .app-header {
+    padding: 1rem !important;
+  }
+  
+  /* Mobile content adjustments */
+  main {
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  
+  /* Fix sidebar height on mobile */
+  .app-sidebar {
+    min-height: 0;
+    flex-shrink: 0;
+  }
+  
+  /* Ensure content panels stack properly */
+  .flex-col.lg\:flex-row {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  
+  /* Smaller padding on very small screens */
+  .app-header {
+    padding: 0.75rem !important;
+  }
+  
+  /* Adjust font sizes for mobile */
+  .app-header h1 {
+    font-size: 1.125rem;
+  }
+  
+  /* Ensure sidebar navigation is accessible */
+  .sidebar-menu-item-rounded {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
 .sidebar-icon {
   color: var(--white);
   opacity: 0.85;
@@ -269,4 +330,41 @@ html, body {
 
 .custom-scrollbar::-webkit-scrollbar-corner {
   background: var(--console-bg);
+}
+
+/* Mobile-specific improvements for code editor */
+@media (max-width: 1024px) {
+  /* Ensure code editor is properly sized on tablets and mobile */
+  .right-panel {
+    min-height: 50vh;
+  }
+  
+  /* Adjust CodeMirror for mobile */
+  .cm-editor .cm-content {
+    padding: 0.75rem !important;
+  }
+  
+  /* Make console output more readable on mobile */
+  .output-console {
+    max-height: 200px;
+    min-height: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Full width containers on mobile */
+  .w-full.lg\:w-1\/2 {
+    width: 100% !important;
+  }
+  
+  /* Adjust content spacing for mobile */
+  .p-3.md\:p-6 {
+    padding: 0.75rem !important;
+  }
+  
+  /* Better code editor sizing on mobile */
+  .right-panel {
+    min-height: 45vh;
+    max-height: 60vh;
+  }
 }

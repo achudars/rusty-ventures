@@ -53,9 +53,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="flex min-h-screen">
+      <main className="flex min-h-screen flex-col md:flex-row">
         {/* Sidebar */}
-        <div className="app-sidebar min-h-screen flex flex-col">
+        <div className="app-sidebar min-h-screen flex flex-col md:min-h-screen">
           {/* Navigation */}
           <nav className="flex-1 px-4 pt-6">
             <div className="mb-8">
@@ -84,7 +84,7 @@ export default function Home() {
         </div>
 
         {/* Main content area */}
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 min-h-screen">
           {/* Header */}
           <header className="app-header p-4">
             <div className="flex items-center">
@@ -95,9 +95,9 @@ export default function Home() {
           </header>
 
           {/* Main content */}
-          <div className="flex flex-1 overflow-hidden p-6 gap-6">
+          <div className="flex flex-1 overflow-hidden p-3 md:p-6 gap-3 md:gap-6 flex-col lg:flex-row">
             {/* Left side - Content area */}
-            <div className="w-1/2 bg-white rounded-lg p-6 shadow overflow-y-auto">
+            <div className="w-full lg:w-1/2 bg-white rounded-lg p-4 md:p-6 shadow overflow-y-auto min-h-[40vh] lg:min-h-auto">
               <h2 className="text-2xl font-bold mb-4 text-gray-900">Rust Playground</h2>
               <p className="mb-4 text-gray-800 leading-relaxed">
                 The purpose of this document is to outline the ideas behind Rust code execution in the browser using WebAssembly.
@@ -139,7 +139,7 @@ export default function Home() {
             </div>
 
             {/* Right side - Code editor */}
-            <div className="w-1/2 right-panel rounded-lg shadow overflow-hidden flex flex-col">
+            <div className="w-full lg:w-1/2 right-panel rounded-lg shadow overflow-hidden flex flex-col min-h-[50vh] lg:min-h-auto">
               <RustCodeEditor currentFile={activeTab} />
             </div>
           </div>
