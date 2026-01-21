@@ -30,7 +30,7 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "typescript": "^5",
-    "wasm-pack": "^0.13.1"
+    "wasm-pack": "^0.14.0"
   },
   "overrides": {
     "axios": "^1.7.7"
