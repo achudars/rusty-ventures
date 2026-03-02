@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@codemirror/lang-rust": "^6.0.2",
-    "@uiw/react-codemirror": "^4.25.5",
+    "@uiw/react-codemirror": "^4.25.7",
     "next": "15.5.12",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
