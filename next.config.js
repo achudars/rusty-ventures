@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Empty turbopack config tells Next.js 16 we are aware of the Turbopack/webpack
+  // coexistence situation and explicitly allow both configs to be present.
+  turbopack: {},
   // Enable WASM modules to be loaded
   webpack(config, { isServer }) {
     // Enable WebAssembly

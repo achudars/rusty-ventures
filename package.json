@@ -9,12 +9,12 @@
     "build-wasm": "wasm-pack build --target web --out-dir ../public/wasm rust",
     "build-wasm-safe": "npm run build-wasm || echo 'WASM build failed, using pre-built files'",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint src"
   },
   "dependencies": {
     "@codemirror/lang-rust": "^6.0.2",
     "@uiw/react-codemirror": "^4.25.8",
-    "next": "15.5.13",
+    "next": "16.1.7",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
@@ -25,8 +25,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.27",
-    "eslint": "^9",
-    "eslint-config-next": "15.5.13",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "16.1.7",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.1",
     "typescript": "^5",
