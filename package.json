@@ -14,9 +14,9 @@
   "dependencies": {
     "@codemirror/lang-rust": "^6.0.2",
     "@uiw/react-codemirror": "^4.25.9",
-    "next": "16.2.4",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "next": "16.2.5",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -26,8 +26,8 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.5.0",
     "eslint": "^9.39.4",
-    "eslint-config-next": "16.2.4",
-    "postcss": "^8.5.13",
+    "eslint-config-next": "16.2.5",
+    "postcss": "^8.5.14",
     "tailwindcss": "^4.2.4",
     "typescript": "^5",
     "wasm-pack": "^0.14.0"
