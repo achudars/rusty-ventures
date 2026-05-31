@@ -427,49 +427,44 @@ test result: ok. All tests passed!`;
     return (
         <div className="flex flex-col h-full">
             {/* Code editor header */}
-            <div className="editor-header border-b">
-                {/* Filename row */}
-                <div className="px-3 pt-3 pb-2">
-                    <span className="text-sm font-medium text-white">
-                        {getFileName(currentFile, viewMode)}
-                    </span>
-                </div>
-
-                {/* Controls row */}
-                <div className="flex items-center justify-between px-3 pb-3">
-                    <div className="flex items-center gap-2">
-                        {/* Toggle buttons for source/test view */}
-                        <button
-                            onClick={() => setViewMode('source')}
-                            className={`px-4 py-2 rounded-lg text-sm font-normal cursor-pointer transition-colors text-white ${viewMode === 'source'
-                                ? 'button-orange-active'
-                                : 'hover:button-hover-dark'
-                                }`}
-                        >
-                            Source
-                        </button>
-                        <button
-                            onClick={() => setViewMode('test')}
-                            className={`px-4 py-2 rounded-lg text-sm font-normal cursor-pointer transition-colors text-white ${viewMode === 'test'
-                                ? 'button-green-active'
-                                : 'hover:button-hover-dark'
-                                }`}
-                        >
-                            Test
-                        </button>
-                    </div>
-                    <div className="flex items-center">
-                        <span className="text-sm text-white opacity-70 mr-3">
-                            {(() => {
-                                if (isLoading) return "Loading...";
-                                if (isRunning) return "Running...";
-                                return "Run";
-                            })()}
+            <div className="editor-header">
+                {/* Filename + controls row */}
+                <div className="flex items-center justify-between px-4 py-2.5">
+                    <div className="flex items-center gap-3">
+                        <span className="text-xs font-mono filename-text">
+                            {getFileName(currentFile, viewMode)}
                         </span>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() => setViewMode('source')}
+                                className={`px-2.5 py-1 rounded text-xs font-medium cursor-pointer transition-colors border ${viewMode === 'source'
+                                    ? 'button-orange-active tab-source-active'
+                                    : 'tab-inactive'
+                                    }`}
+                            >
+                                Source
+                            </button>
+                            <button
+                                onClick={() => setViewMode('test')}
+                                className={`px-2.5 py-1 rounded text-xs font-medium cursor-pointer transition-colors border ${viewMode === 'test'
+                                    ? 'button-green-active tab-test-active'
+                                    : 'tab-inactive'
+                                    }`}
+                            >
+                                Tests
+                            </button>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {(isLoading || isRunning) && (
+                            <span className="text-xs run-status">
+                                {isLoading ? 'Loading…' : 'Running…'}
+                            </span>
+                        )}
                         <button
                             onClick={runCode}
                             disabled={isLoading || isRunning || !rustModule}
-                            className={`px-4 py-2 rounded-lg run-button cursor-pointer ${isLoading || isRunning || !rustModule
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium run-button cursor-pointer ${isLoading || isRunning || !rustModule
                                 ? 'run-button-disabled cursor-not-allowed'
                                 : 'run-button-active'
                                 }`}
@@ -477,6 +472,7 @@ test result: ok. All tests passed!`;
                             title="Run Rust code"
                         >
                             <PlayIcon />
+                            <span>Run</span>
                         </button>
                     </div>
                 </div>
@@ -487,9 +483,9 @@ test result: ok. All tests passed!`;
                 {isLoading || isLoadingFile ? (
                     <div className="loading-container h-full flex flex-col items-center justify-center">
                         <div className="text-center">
-                            <div className="inline-block w-8 h-8 border-4 border-steel-blue border-t-transparent rounded-full animate-spin mb-3"></div>
-                            <div className="text-sm text-white">
-                                {isLoading ? output || "Loading Rust environment..." : "Loading file..."}
+                            <div className="inline-block w-6 h-6 border-2 rounded-full animate-spin mb-3 wasm-spinner"></div>
+                            <div className="text-xs loading-hint">
+                                {isLoading ? 'Loading Rust environment…' : 'Loading file…'}
                             </div>
                         </div>
                     </div>
@@ -517,34 +513,32 @@ test result: ok. All tests passed!`;
             </div>
 
             {/* Output console */}
-            <div className="output-console custom-scrollbar max-h-[300px] min-h-[100px] border-t p-3 font-mono overflow-y-auto overflow-x-hidden console-bg">
+            <div className="output-console custom-scrollbar max-h-[300px] min-h-[100px] overflow-y-auto overflow-x-hidden console-bg console-wrapper">
                 <div className="flex items-center justify-between mb-2">
-                    <div className="text-xs console-output-text font-medium">Console Output</div>
-                    <div className="text-xs text-gray-300">
+                    <div className="text-xs font-medium uppercase tracking-widest console-output-text">
+                        Output
+                    </div>
+                    <div className="text-xs flex items-center gap-1.5 console-header-status">
                         {isRunning && (
-                            <span className="inline-block w-2 h-2 bg-light-blue rounded-full mr-1 animate-pulse"></span>
+                            <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse console-pulse-dot"></span>
                         )}
-                        {(() => {
-                            if (isRunning) return "Processing...";
-                            if (output) return "Completed";
-                            return "Run";
-                        })()}
+                        {isRunning ? 'Running…' : output ? 'Done' : 'Ready'}
                     </div>
                 </div>
-                <pre className="whitespace-pre-wrap text-sm text-white break-words">
+                <pre className="whitespace-pre-wrap text-xs break-words font-mono console-output-pre">
                     {(() => {
-                        if (isLoading) return "Initializing Rust environment...";
-                        if (isRunning) return "Running code...";
-                        return output || "Run the code to see the output";
+                        if (isLoading) return 'Initializing Rust environment…';
+                        if (isRunning) return 'Running code…';
+                        return output || 'Run the code to see output here.';
                     })()}
                 </pre>
                 {loadingError && !isLoading && (
-                    <div className="mt-3 pt-3 border-t border-gray-600">
+                    <div className="mt-3 pt-3 retry-divider">
                         <button
                             onClick={retryLoadWasm}
-                            className="px-4 py-2 bg-steel-blue hover:bg-light-blue text-white text-sm rounded-lg transition-colors"
+                            className="px-3 py-1.5 text-xs font-medium rounded transition-colors run-button run-button-active"
                         >
-                            Retry Loading Rust WebAssembly
+                            Retry Loading WebAssembly
                         </button>
                     </div>
                 )}

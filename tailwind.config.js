@@ -8,19 +8,28 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // New color palette from the attachment
-        "dark-burgundy": "#800020",
-        "steel-blue": "#4682B4",
-        "light-blue": "#87CEEB",
-        "pale-blue": "#B0E0E6",
-        "very-light-blue": "#F0F8FF",
-
-        // Keep pride colors for legacy compatibility
-        "pride-purple": "#a12a72",
-        "pride-red": "#ee3356",
-        "pride-orange": "#f77e55",
-        "pride-yellow": "#f9d35e",
-        "pride-teal": "#2a9d8f",
+        base: "#0a0a0a",
+        surface: "#111111",
+        elevated: "#1a1a1a",
+        code: "#141414",
+        console: "#0d0d0d",
+        accent: "#e07b39",
+        "accent-hover": "#f08c50",
+        success: "#4ade80",
+        error: "#f87171",
+        "text-primary": "#ebebeb",
+        "text-secondary": "#808080",
+        "text-muted": "#484848",
+      },
+      fontFamily: {
+        sans: [
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "sans-serif",
+        ],
+        mono: ["JetBrains Mono", "Fira Code", "Cascadia Code", "monospace"],
       },
     },
   },

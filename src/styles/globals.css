@@ -1,72 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  /* New color palette from the attachment */
-  --color-dark-burgundy: #800020;
-  --color-steel-blue: #4682B4;
-  --color-light-blue: #87CEEB;
-  --color-pale-blue: #B0E0E6;
-  --color-very-light-blue: #F0F8FF;
+  /* 2026 Minimalist Dark Palette */
+  --bg-base: #0a0a0a;
+  --bg-surface: #111111;
+  --bg-elevated: #1a1a1a;
+  --bg-code: #141414;
+  --bg-console: #0d0d0d;
 
-  /* Pride flag colors for compatibility */
-  --color-purple: #a12a72;
-  --color-red: #ee3356;
-  --color-orange: #f77e55;
-  --color-yellow: #f9d35e;
-  --color-teal: #2a9d8f;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-default: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
 
-  /* Main app colors using the new palette */
-  --dark-primary: var(--color-dark-burgundy);
-  --medium-primary: var(--color-steel-blue);
-  --light-primary: var(--color-light-blue);
-  --accent-primary: var(--color-pale-blue);
-  --accent-secondary: var(--color-very-light-blue);
-  --white: #ffffff;
-  --off-white: #f8f9fa;
-  --light-gray: #e9ecef;
-  --medium-gray: #ced4da;
-  --dark-gray: #495057;
-  --code-bg: #2d2d2d;
-  --dark-panel: #1e2a3a;
-  --console-bg: #1a2332;
+  --text-primary: #ebebeb;
+  --text-secondary: #808080;
+  --text-muted: #484848;
 
-  /* Theme colors using new palette */
-  --background: var(--dark-primary);
-  --sidebar-bg: var(--color-dark-burgundy);
-  --foreground: var(--white);
-  --header-bg: var(--color-dark-burgundy);
-  --header-text: var(--white);
-  --editor-bg: var(--dark-panel);
-  --editor-text: var(--white);
-  --button-primary: var(--color-steel-blue);
-  --button-hover: var(--color-light-blue);
-  --button-disabled: var(--medium-gray);
-  --border-color: var(--light-primary);
-  
-  /* Primary and accent colors for the app */
-  --primary-color: var(--color-steel-blue);
-  --accent-color: var(--color-light-blue);
-  --success-color: var(--color-pale-blue);
-  --warning-color: var(--color-yellow);
-  --info-color: var(--color-very-light-blue);
-}
+  /* Rust orange accent — thematic and warm */
+  --accent: #e07b39;
+  --accent-hover: #f08c50;
+  --accent-dim: rgba(224, 123, 57, 0.12);
+  --accent-border: rgba(224, 123, 57, 0.25);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: var(--color-dark-burgundy);
-    --foreground: var(--white);
-    --header-bg: var(--color-dark-burgundy);
-    --editor-bg: var(--dark-panel);
-  }
+  --success: #4ade80;
+  --error: #f87171;
+
+  /* Legacy aliases used by components */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --sidebar-bg: var(--bg-surface);
+  --dark-panel: var(--bg-elevated);
+  --console-bg: var(--bg-console);
+  --white: #ebebeb;
+  --light-gray: #808080;
+  --medium-gray: #484848;
+  --dark-gray: #2a2a2a;
+  --light-primary: var(--border-default);
+  --color-light-blue: var(--accent);
+  --color-steel-blue: var(--accent);
+  --color-pale-blue: var(--accent-hover);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -77,18 +60,19 @@ html, body {
   height: 100%;
 }
 
-/* App layout styles similar to python-chronicles */
+/* App layout */
 .app-header {
-  background-color: var(--sidebar-bg);
-  color: var(--header-text);
-  border-bottom: 1px solid var(--light-primary);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .app-sidebar {
-  background-color: var(--sidebar-bg);
-  color: var(--white);
-  width: 240px;
-  min-width: 240px;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  width: 220px;
+  min-width: 220px;
+  border-right: 1px solid var(--border-subtle);
 }
 
 /* Mobile responsive styles */
@@ -105,27 +89,21 @@ html, body {
     padding: 0;
     margin: 0;
   }
-  
-  /* Mobile header adjustments */
+
   .app-header {
     padding: 1rem !important;
   }
-  
-  /* Mobile content adjustments */
+
   main {
     min-height: 100vh;
     flex-direction: column;
   }
-  
-  /* Fix sidebar height on mobile */
+
   .app-sidebar {
     min-height: 0;
     flex-shrink: 0;
-  }
-  
-  /* Ensure content panels stack properly */
-  .flex-col.lg\:flex-row {
-    flex-direction: column;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
   }
 }
 
@@ -134,82 +112,58 @@ html, body {
     width: 100% !important;
     min-width: 100% !important;
   }
-  
-  /* Smaller padding on very small screens */
+
   .app-header {
     padding: 0.75rem !important;
   }
-  
-  /* Adjust font sizes for mobile */
+
   .app-header h1 {
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
-  
-  /* Ensure sidebar navigation is accessible */
+
   .sidebar-menu-item-rounded {
-    padding: 0.875rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
   }
 }
 
-.sidebar-icon {
-  color: var(--white);
-  opacity: 0.85;
-}
-
-.sidebar-icon.active {
-  color: var(--white);
-  opacity: 1;
-}
-
-.sidebar-menu-item {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border-radius: 0.25rem;
-  margin: 0.25rem 0;
-  transition: background-color 0.2s;
-}
-
-.sidebar-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-menu-item.active {
-  background-color: var(--dark-panel);
-}
-
-/* Rounded menu items */
+/* Sidebar menu items */
 .sidebar-menu-item-rounded {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s;
-  font-size: 0.875rem;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.15s, color 0.15s;
+  font-size: 0.8125rem;
   font-weight: 400;
-  color: var(--white);
+  color: var(--text-secondary);
   cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
 }
 
 .sidebar-menu-item-rounded:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
 }
 
 .sidebar-menu-item-rounded.active {
-  background-color: var(--dark-panel);
-  border-radius: 0.5rem;
+  background-color: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 500;
 }
 
 /* Editor styles */
 .editor-header {
-  background-color: var(--dark-panel);
-  border-bottom: 1px solid var(--light-primary);
+  background-color: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .run-button {
-  transition: background-color 0.2s;
+  transition: all 0.15s;
   color: white;
 }
 
@@ -218,39 +172,40 @@ html, body {
 }
 
 .run-button-active:hover {
-  background-color: var(--color-light-blue);
+  background-color: var(--accent-hover);
 }
 
 .run-button-disabled {
-  background-color: var(--button-disabled);
+  background-color: var(--bg-elevated);
+  opacity: 0.4;
 }
 
 .loading-container {
-  background-color: var(--dark-panel);
-  color: var(--medium-gray);
+  background-color: var(--bg-elevated);
+  color: var(--text-secondary);
 }
 
 .console-bg {
-  background-color: var(--console-bg);
+  background-color: var(--bg-console);
 }
 
 /* CodeMirror editor styling */
 .cm-editor {
-  background-color: var(--dark-panel) !important;
+  background-color: var(--bg-elevated) !important;
 }
 
 .cm-editor .cm-focused {
-  background-color: var(--dark-panel) !important;
+  background-color: var(--bg-elevated) !important;
 }
 
 .cm-editor .cm-scroller {
-  background-color: var(--dark-panel) !important;
+  background-color: var(--bg-elevated) !important;
   overflow: visible !important;
   scrollbar-width: none;
 }
 
 .cm-editor .cm-content {
-  background-color: var(--dark-panel) !important;
+  background-color: var(--bg-elevated) !important;
   padding: 1rem !important;
 }
 
@@ -259,92 +214,72 @@ html, body {
 }
 
 .console-output-text {
-  color: var(--color-light-blue);
+  color: var(--accent);
 }
 
 .right-panel {
-  background-color: var(--console-bg);
-  color: var(--white);
+  background-color: var(--bg-console);
+  color: var(--text-primary);
 }
 
 .right-panel .loading-container {
-  color: var(--white);
+  color: var(--text-secondary);
 }
 
 .right-panel .output-console {
-  color: var(--light-gray);
+  color: var(--text-secondary);
 }
 
 .output-console {
-  background-color: var(--console-bg);
-  border-color: var(--light-primary);
+  background-color: var(--bg-console);
+  border-color: var(--border-subtle);
 }
 
-/* Custom button styles for code editor */
+/* Button styles */
 .button-orange-active {
-  background-color: var(--color-steel-blue);
+  background-color: var(--accent-dim);
+  color: var(--accent);
 }
 
 .button-green-active {
-  background-color: var(--color-pale-blue);
+  background-color: rgba(74, 222, 128, 0.1);
+  color: var(--success);
 }
 
-.button-hover-dark {
-  background-color: var(--dark-gray);
-}
-
-/* Custom thin scrollbar for output console */
+/* Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: var(--medium-gray) var(--console-bg);
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
 }
 
-/* Webkit scrollbar styling for Chrome/Safari - vertical only */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 0px;
-}
-
-.custom-scrollbar::-webkit-scrollbar:vertical {
-  width: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar:horizontal {
+  width: 4px;
   height: 0px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--console-bg);
-  border-radius: 4px;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--medium-gray);
-  border-radius: 4px;
-  border: 1px solid var(--console-bg);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--light-gray);
+  background: rgba(255, 255, 255, 0.18);
 }
 
-.custom-scrollbar::-webkit-scrollbar-corner {
-  background: var(--console-bg);
-}
-
-/* Mobile-specific improvements for code editor */
+/* Mobile editor sizing */
 @media (max-width: 1024px) {
-  /* Ensure code editor is properly sized on tablets and mobile */
   .right-panel {
     min-height: 50vh;
   }
-  
-  /* Adjust CodeMirror for mobile */
+
   .cm-editor .cm-content {
     padding: 0.75rem !important;
   }
-  
-  /* Make console output more readable on mobile */
+
   .output-console {
     max-height: 200px;
     min-height: 80px;
@@ -352,19 +287,143 @@ html, body {
 }
 
 @media (max-width: 768px) {
-  /* Full width containers on mobile */
-  .w-full.lg\:w-1\/2 {
-    width: 100% !important;
-  }
-  
-  /* Adjust content spacing for mobile */
-  .p-3.md\:p-6 {
-    padding: 0.75rem !important;
-  }
-  
-  /* Better code editor sizing on mobile */
   .right-panel {
     min-height: 45vh;
     max-height: 60vh;
   }
 }
+
+/* ─── Semantic utility classes (avoids inline styles) ──────────────────── */
+
+/* Sidebar */
+.sidebar-brand-border {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sidebar-brand-text {
+  color: var(--accent);
+}
+
+.sidebar-section-label {
+  color: var(--text-muted);
+}
+
+/* Header */
+.header-title {
+  color: var(--text-primary);
+}
+
+.wasm-badge {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+
+/* Main area */
+.main-bg {
+  background: var(--bg-base);
+}
+
+/* Content panel */
+.content-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+.content-heading {
+  color: var(--text-primary);
+}
+
+.content-body {
+  color: var(--text-secondary);
+}
+
+/* Info cards inside content panel */
+.info-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.info-card-title {
+  color: var(--text-muted);
+}
+
+.info-card-text {
+  color: var(--text-secondary);
+}
+
+.info-card-strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.inline-code {
+  background: var(--bg-base);
+  color: var(--accent);
+}
+
+.feature-bullet {
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.right-panel-border {
+  border: 1px solid var(--border-subtle);
+}
+
+/* Editor component */
+.filename-text {
+  color: var(--text-secondary);
+}
+
+.tab-inactive {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.tab-source-active {
+  border: 1px solid var(--accent-border);
+}
+
+.tab-test-active {
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.run-status {
+  color: var(--text-muted);
+}
+
+/* Spinner */
+.wasm-spinner {
+  border: 2px solid var(--accent);
+  border-top-color: transparent;
+}
+
+.loading-hint {
+  color: var(--text-muted);
+}
+
+/* Console */
+.console-wrapper {
+  border-top: 1px solid var(--border-subtle);
+  padding: 0.75rem 1rem;
+}
+
+.console-header-status {
+  color: var(--text-muted);
+}
+
+.console-pulse-dot {
+  background: var(--accent);
+}
+
+.console-output-pre {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.retry-divider {
+  border-top: 1px solid var(--border-subtle);
+}
+

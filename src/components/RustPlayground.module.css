@@ -4,30 +4,32 @@
   border-radius: 8px;
   overflow: hidden;
   height: 100%;
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .title {
   margin: 0 0 10px 0;
-  font-size: 1.5rem;
-  color: var(--color-yellow);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .editor {
   position: relative;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--bg-elevated);
   border-radius: 6px;
   height: 300px;
   overflow: auto;
-  border: 1px solid var(--color-orange);
+  border: 1px solid var(--border-subtle);
 }
 
 .codeArea {
   margin: 0;
   padding: 1rem;
-  color: #fff;
-  font-family: 'Courier New', monospace;
-  font-size: 1rem;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875rem;
   background-color: transparent;
   white-space: pre-wrap;
   overflow: auto;
@@ -38,42 +40,50 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: var(--color-red);
+  background-color: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 0.9rem;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.15s;
 }
 
 .runButton:hover {
-  background-color: var(--color-orange);
+  background-color: var(--accent-hover);
 }
 
 .runButton:disabled {
-  background-color: var(--color-purple);
-  opacity: 0.7;
+  background-color: var(--bg-elevated);
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .output {
-  margin-top: 20px;
-  background-color: var(--color-yellow);
-  color: #333;
+  margin-top: 16px;
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
   padding: 1rem;
   border-radius: 6px;
+  border: 1px solid var(--border-subtle);
 }
 
 .output h3 {
   margin-top: 0;
-  font-size: 1.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
   margin-bottom: 10px;
 }
 
 .output pre {
   margin: 0;
-  font-family: 'Courier New', monospace;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875rem;
   white-space: pre-wrap;
+  color: var(--accent);
 }
